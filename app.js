@@ -5,7 +5,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const path = require("path");
-const got = require("got");
 const app = express();
 app.use(express.json());
 
@@ -64,7 +63,7 @@ app.post("/login/",  async (req, res) => {
     res.status(400);
     res.send({ error_msg: "Invalid username" });
   } else {
-    if (isUser.password === password) {
+    if (await bcrypt.compare(password, isUser.password)) {
       let payload = { username: username };
       console.log(`${username} is logged in`);
       let jwt_token = jwt.sign(payload, "Magic");
@@ -90,8 +89,35 @@ app.post("/data/", checkToken, async (req, res) => {
   res.send("success");
 });
 
+//API 3 - Register new user 
+app.post("/register/", async (req, res) => {
+  const { username, fullname, password, } = req.body;
+  const isExist = await db.get(`
+    select * from user where username = '${username}'
+  `);
+  if (isExist === undefined) {
+    if (password.length < 5) {
+      res.status(400);
+      res.send({ error_msg: "Password is too short" });
+      console.log("Password is too short");
+    } else {
+      const encryptedPass = await bcrypt.hash(password, 10);
+      const addUser = await db.run(`
+            insert into user (username,full_name,password) values ('${username}','${fullname}','${encryptedPass}');
+        `);
+      res.status(200);
+      res.send("User created successfully");
+      console.log("User created successfully");
+    }
+  } else {
+    res.status(400);
+    res.send({ error_msg: "User already exists" });
+    console.log("User already exists");
+  }
+});
 
-//API 3 - send stored data from database to frontend
+
+//API 4 - send stored data from database to frontend
 app.get("/return/", checkToken, async (req, res) => {
   const getFromDatabase = await db.all(`
     SELECT * FROM uploaded
