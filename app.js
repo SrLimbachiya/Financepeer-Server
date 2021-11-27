@@ -64,7 +64,7 @@ app.post("/login/",  async (req, res) => {
     res.send({ error_msg: "Invalid username" });
   } else {
     if (await bcrypt.compare(password, isUser.password)) {
-      let payload = { username: username };
+      let payload = { username: username, fullname : isUser.full_name };
       console.log(`${username} is logged in`);
       let jwt_token = jwt.sign(payload, "Magic");
       res.send({ jwt_token });
@@ -75,6 +75,23 @@ app.post("/login/",  async (req, res) => {
     }
   }
 });
+
+
+app.get('/get-user' , async (req,res) => {
+  const header = (req.headers.authorization)
+  const myToken = header.split(' ')[1]
+  jwt.verify(myToken, "Magic", (error, decodedToken) => {
+    if (error) {
+      console.log(error.message)
+      res.status(400)
+      res.send({error_msg : error.message})
+    } else {
+      res.status(200)
+      res.send(decodedToken)
+    }
+  } )
+})
+
 
 //API 2 - send data to database from received file
 app.post("/data/", checkToken, async (req, res) => {
@@ -106,7 +123,7 @@ app.post("/register/", async (req, res) => {
             insert into user (username,full_name,password) values ('${username}','${fullname}','${encryptedPass}');
         `);
       res.status(200);
-      res.send("User created successfully");
+      res.send({ msg : "User created successfully"});
       console.log("User created successfully");
     }
   } else {

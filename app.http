@@ -7,6 +7,9 @@ Content-Type: application/json
 }
 ###
 
+get http://localhost:7747/get-user
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlNhZ2FyIiwib3RoZXJUaGlnIjoid29ybGQiLCJmdWxsbmFtZSI6IlNhZ2FyIExpbWJhY2hpeWEiLCJpYXQiOjE2MzgwMDczOTV9.f16mPS9CXEN6whfnWlUYCVR-PdeeyVzurZrc8YTO8BA
+
 get http://192.168.1.8:3000/states/3/
 Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNocmlzdG9waGVyX3BoaWxsaXBzIiwiaWF0IjoxNjI3MjM0NDIyfQ.g8uulPWUgeUwL4j5tLSVxzkGVxdj38guuFQEx_bSukg
 
